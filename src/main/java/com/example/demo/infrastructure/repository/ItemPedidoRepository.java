@@ -2,6 +2,8 @@ package com.example.demo.infrastructure.repository;
 
 import com.example.demo.domain.model.ItemPedido;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface ItemPedidoRepository extends JpaRepository<Long, ItemPedido> {
+@Repository
+public interface ItemPedidoRepository extends JpaRepository<ItemPedido, Long> {
 }
