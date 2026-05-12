@@ -15,9 +15,7 @@ public record UsuarioRequestDTO(
         @NotBlank(message = "É necessário informar o e-mail")
         String email,
         @NotBlank(message = "É necessário informar uma senha!")
-        String senha,
-        @NotNull(message = "É necessário informar o perfil do usuário")
-        PerfilUsuario perfil
+        String senha
 
 
 ){}

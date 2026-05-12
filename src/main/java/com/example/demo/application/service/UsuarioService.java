@@ -4,8 +4,10 @@ import com.example.demo.application.dto.request.UsuarioRequestDTO;
 import com.example.demo.application.dto.response.UsuarioResponseDTO;
 import com.example.demo.application.mapper.UsuarioMapper;
 import com.example.demo.domain.model.Usuario;
+import com.example.demo.infrastructure.exception.UsuarioNaoEncontrado;
 import com.example.demo.infrastructure.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -40,13 +42,32 @@ public class UsuarioService {
     }
 
     public UsuarioResponseDTO findById(Long id) {
-         Usuario usuario = repoUsuario.findById(id).orElseThrow(() -> new RuntimeException("Não foi possível localizar o usuário!"));
-        return usuarioMapper.toDTO(usuario);
+
+
+
+            Usuario usuario = repoUsuario.findById(id).orElseThrow(() -> new UsuarioNaoEncontrado("Usuário não encontrado, verifique os dados informados!"));
+            return usuarioMapper.toDTO(usuario);
+
+
+
+    }
+
+    public Usuario findByEmail(String email){
+
+
+         Usuario usuarioBuscado = repoUsuario.findByEmail(email);
+
+      if(usuarioBuscado == null){
+          throw new UsuarioNaoEncontrado("Usuário não encontrado!");
+      }
+            return repoUsuario.findByEmail(email);
+
+
 
     }
 
     public UsuarioResponseDTO update(Long id, UsuarioRequestDTO dto){
-        Usuario entity = repoUsuario.findById(id).orElseThrow(() -> new RuntimeException("Não foi possível localizar o usuário!"));
+        Usuario entity = repoUsuario.findById(id).orElseThrow(() -> new RuntimeException("Usuário não encontrado, verifique os dados informados!"));
         usuarioMapper.update(dto, entity);
         String senhaAlterada = passwordEncoder.encode(dto.senha());
         entity.setSenhaHash(senhaAlterada);
