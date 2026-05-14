@@ -19,25 +19,30 @@ public class JwtEndpoint {
 
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
-    private final UsuarioService repoUsuario;
+    private final UsuarioService usuarioService;
 
     @PostMapping("/login")
     public String login(@RequestBody UsuarioRequestDTO usuario){
 
+        Usuario user = usuarioService.findByEmail(usuario.email());
+
+
    try{
+
+
        authenticationManager.authenticate(
                new UsernamePasswordAuthenticationToken(usuario.email(), usuario.senha()));
 
-       Usuario user = repoUsuario.findByEmail(usuario.email());
 
-       return jwtService.gerarToken(user.getEmail(), user.getPerfil().name());
+
+
    }
 
    catch (BadCredentialsException e) {
-       throw new UsuarioNaoEncontrado("Email ou senha inválidos");
+       throw new BadCredentialsException("Email ou senha inválidos");
    }
 
-
+        return jwtService.gerarToken(user.getEmail(), user.getPerfil().name());
 
 
     }

@@ -40,8 +40,10 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.findById(id));
     }
 
+
+
     @PatchMapping("/{id}")
-    public ResponseEntity<UsuarioResponseDTO> update(@RequestBody @Valid UsuarioRequestDTO dto, @PathVariable Long id){
+    public ResponseEntity<UsuarioResponseDTO> update(@RequestBody  UsuarioRequestDTO dto, @PathVariable Long id){
     return ResponseEntity.ok(usuarioService.update(id, dto));
     }
 

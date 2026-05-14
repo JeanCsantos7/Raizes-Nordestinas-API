@@ -3,7 +3,6 @@ package com.example.demo.infrastructure.config;
 import com.example.demo.application.service.UsuarioService;
 
 import com.example.demo.domain.model.Usuario;
-import com.example.demo.infrastructure.exception.UsuarioNaoEncontrado;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -27,7 +26,7 @@ public class UserDetail implements UserDetailsService {
       Usuario usuario = repoUsuario.findByEmail(email);
 
       if(email == null){
-           throw new UsuarioNaoEncontrado("Usuário não encontrado");
+           throw new UsernameNotFoundException("Usuário não encontrado");
        }
 
 
