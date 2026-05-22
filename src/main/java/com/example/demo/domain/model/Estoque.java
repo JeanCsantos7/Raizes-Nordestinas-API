@@ -1,9 +1,6 @@
 package com.example.demo.domain.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,9 +18,14 @@ public class Estoque {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long produtoID;
 
-    private Long unidadeID;
+    @ManyToOne
+    @JoinColumn(name = "produto_id")
+    private Produto produto;
+
+    @ManyToOne
+    @JoinColumn(name = "unidade_id")
+    private Unidade unidade;
 
     private Integer quantidade;
 

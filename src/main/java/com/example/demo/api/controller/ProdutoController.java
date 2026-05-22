@@ -42,9 +42,18 @@ public class ProdutoController {
         return ResponseEntity.ok(produtoService.findById(id));
     }
 
+
+
+
     @PatchMapping("/{id}")
     public ResponseEntity<ProdutoResponseDTO> update(@RequestBody @Valid ProdutoRequestDTO dto, @PathVariable Long id){
         return ResponseEntity.ok(produtoService.update(dto, id));
+    }
+
+    @PatchMapping ("/{id}/preco")
+    public ResponseEntity<ProdutoResponseDTO> alterarPreco(@PathVariable  Long id, @RequestBody @Valid AlterarPrecoRequestDTO preco){
+        produtoService.alterarPreco(id, preco.preco() );
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")
@@ -53,10 +62,6 @@ public class ProdutoController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @PatchMapping ("/{id}/preco")
-    public ResponseEntity<ProdutoResponseDTO> alterarPreco(@PathVariable  Long id, @RequestBody @Valid AlterarPrecoRequestDTO preco){
-        produtoService.alterarPreco(id, preco.preco() );
-        return ResponseEntity.noContent().build();
-    }
+
 
 }

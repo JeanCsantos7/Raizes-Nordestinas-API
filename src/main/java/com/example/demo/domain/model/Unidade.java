@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,5 +25,13 @@ public class Unidade {
 
     @Column(nullable = false)
     private String endereco;
+
+
+
+    @OneToMany(mappedBy = "unidade", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Estoque> estoque = new ArrayList<>();
+
+    @OneToMany(mappedBy = "unidadePedido", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Pedido> pedidos = new ArrayList<>();
 
 }

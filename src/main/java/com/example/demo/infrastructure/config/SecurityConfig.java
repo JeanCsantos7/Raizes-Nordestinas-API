@@ -29,6 +29,8 @@ public class SecurityConfig {
                         .requestMatchers("/auth/login").permitAll()
                         .requestMatchers("/usuarios/**")
                         .hasAnyRole("ATENDENTE", "GERENTE")
+                        .requestMatchers("/estoque/**").permitAll()
+                        .requestMatchers("/pedidos/**").permitAll()
                         .anyRequest().authenticated()
 
 

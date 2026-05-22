@@ -21,40 +21,48 @@ public class JwtFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-     String header = request.getHeader("Authorization");
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain)
+            throws ServletException, IOException {
 
+        String header = request.getHeader("Authorization");
 
-     try{
+        try {
 
-         if(header != null && header.startsWith("Bearer ")){
-             String token = header.substring(7);
-             String email = jwtService.validarToken(token);
-             String role = jwtService.obterRole(token);
-             UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(email, null, List.of(new SimpleGrantedAuthority("ROLE_" + role)  ));
-             SecurityContextHolder
-                     .getContext()
-                     .setAuthentication(auth);
-         }
+            if (header != null && header.startsWith("Bearer ")) {
 
-         filterChain.doFilter(request, response);
+                String token = header.substring(7);
 
-     }
+                String email = jwtService.validarToken(token);
+                String role = jwtService.obterRole(token);
 
-     catch (Exception ex){
+                UsernamePasswordAuthenticationToken auth =
+                        new UsernamePasswordAuthenticationToken(
+                                email,
+                                null,
+                                List.of(new SimpleGrantedAuthority("ROLE_" + role))
+                        );
 
-         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-         response.setContentType("application/json");
-
-         response.getWriter().write("""
-            {
-              "status": 401,
-              "message": "Não foi possível prosseguir com sua solicitação"
+                SecurityContextHolder
+                        .getContext()
+                        .setAuthentication(auth);
             }
+
+            filterChain.doFilter(request, response);
+
+        } catch (Exception ex) {
+
+            ex.printStackTrace();
+
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+
+            response.getWriter().write("""
+        {
+          "status": 401,
+          "message": "Token inválido ou expirado"
+        }
         """);
-     }
-
-
-
-    }
-}
+        }
+    }}

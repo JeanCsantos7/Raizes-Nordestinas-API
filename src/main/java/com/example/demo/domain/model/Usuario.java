@@ -9,6 +9,9 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -28,6 +31,9 @@ public class Usuario {
     private String nome;
 
     private String email;
+
+    @OneToMany(mappedBy = "clientes", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Pedido> clientes = new ArrayList<>();
 
 
     private String senhaHash;

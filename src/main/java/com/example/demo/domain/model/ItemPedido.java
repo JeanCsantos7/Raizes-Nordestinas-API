@@ -1,15 +1,13 @@
 package com.example.demo.domain.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+
 
 
 @Entity
@@ -23,11 +21,23 @@ public class ItemPedido {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long pedidoID;
+    @ManyToOne
+    @JoinColumn(name = "pedido_id")
+    private Pedido pedido;
 
-    private Long produtoID;
+    @ManyToOne
+    @JoinColumn(name = "produto_id")
+    private Produto produto;
 
     private Integer quantidade;
 
     private BigDecimal precoUnitario;
+
+    @Transient
+
+    public BigDecimal getSubTotal(){
+          return precoUnitario.multiply(BigDecimal.valueOf(quantidade));
+
+
+     }
 }
