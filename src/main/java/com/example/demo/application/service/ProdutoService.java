@@ -3,8 +3,11 @@ package com.example.demo.application.service;
 import com.example.demo.application.dto.request.ProdutoRequestDTO;
 import com.example.demo.application.dto.response.ProdutoResponseDTO;
 import com.example.demo.application.mapper.ProdutoMapper;
+import com.example.demo.application.projection.ProdutoProjection;
 import com.example.demo.domain.model.Produto;
+import com.example.demo.domain.model.Unidade;
 import com.example.demo.infrastructure.repository.ProdutoRepository;
+import com.example.demo.infrastructure.repository.UnidadeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,11 +23,13 @@ public class ProdutoService {
 
 
     public ProdutoResponseDTO save(ProdutoRequestDTO dados){
+       Produto toEntity = produtoMapper.toEntity(dados);
 
-        Produto toEntity = produtoMapper.toEntity(dados);
-        Produto produtoSalvo = produtoRepository.save(toEntity);
+      Produto salvarProduto = produtoRepository.save(toEntity);
 
-        return produtoMapper.toDTO(produtoSalvo);
+      return produtoMapper.toDTO(salvarProduto);
+
+
 
 
     }
@@ -46,10 +51,18 @@ public class ProdutoService {
 
     }
 
+    public List<ProdutoResponseDTO> findByUnidade(Long id){
+      List<ProdutoProjection> buscaUnidade = produtoRepository.findByUnidade(id);
+
+        return buscaUnidade.stream()
+                .map(produtoMapper::projectionToDTO)
+                .toList();
+    }
 
 
     public ProdutoResponseDTO update(ProdutoRequestDTO dados, Long id){
-      Produto buscaProduto = produtoRepository.findById(id).orElseThrow(() -> new RuntimeException("Produto não localizado"));
+
+        Produto buscaProduto = produtoRepository.findById(id).orElseThrow(() -> new RuntimeException("Produto não localizado"));
       produtoMapper.update(dados, buscaProduto);
       Produto produtoSalvo = produtoRepository.save(buscaProduto);
 
@@ -61,7 +74,7 @@ public class ProdutoService {
         produtoRepository.deleteById(id);
     }
 
-    public ProdutoResponseDTO alterarPreco(Long id, BigDecimal preco){
+    public ProdutoResponseDTO alterarPreco(Long id, BigDecimal preco) {
 
         Produto buscaProduto = produtoRepository.findById(id).orElseThrow(() -> new RuntimeException("Produto não localizado"));
         buscaProduto.setPreco(preco);
@@ -70,8 +83,9 @@ public class ProdutoService {
         return produtoMapper.toDTO(produtoSalvo);
 
 
-    }
-
-
-
+        }
 }
+
+
+
+

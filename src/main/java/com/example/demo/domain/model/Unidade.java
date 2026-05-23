@@ -27,7 +27,6 @@ public class Unidade {
     private String endereco;
 
 
-
     @OneToMany(mappedBy = "unidade", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Estoque> estoque = new ArrayList<>();
 

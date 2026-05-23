@@ -2,6 +2,7 @@ package com.example.demo.application.mapper;
 
 import com.example.demo.application.dto.request.ProdutoRequestDTO;
 import com.example.demo.application.dto.response.ProdutoResponseDTO;
+import com.example.demo.application.projection.ProdutoProjection;
 import com.example.demo.domain.model.Produto;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
@@ -15,6 +16,7 @@ public interface ProdutoMapper {
 
      Produto toEntity(ProdutoRequestDTO dto);
      ProdutoResponseDTO toDTO(Produto entity);
+     ProdutoResponseDTO projectionToDTO(ProdutoProjection projection);
      List<ProdutoResponseDTO> listDTO(List<Produto> listEntity);
 
      @BeanMapping(

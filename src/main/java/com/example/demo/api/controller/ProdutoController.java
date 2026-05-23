@@ -42,6 +42,11 @@ public class ProdutoController {
         return ResponseEntity.ok(produtoService.findById(id));
     }
 
+    @GetMapping("/unidade/{id}")
+    public ResponseEntity<List<ProdutoResponseDTO>> findByUnidade(@PathVariable Long id){
+        return ResponseEntity.ok(produtoService.findByUnidade(id));
+    }
+
 
 
 

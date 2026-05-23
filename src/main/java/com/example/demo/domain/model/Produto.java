@@ -25,6 +25,8 @@ public class Produto {
 
     private BigDecimal preco;
 
+
+
     @OneToMany(mappedBy = "produto", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Estoque> estoqueProdutos = new ArrayList<>();
 
