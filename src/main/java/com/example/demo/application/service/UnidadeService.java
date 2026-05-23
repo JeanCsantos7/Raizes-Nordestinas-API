@@ -7,6 +7,8 @@ import com.example.demo.domain.model.Unidade;
 
 import com.example.demo.infrastructure.repository.UnidadeRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,8 +29,9 @@ public class UnidadeService {
 
      }
 
-     public List<UnidadeResponseDTO> findAll(){
-         return unidadeMapper.listDTO(unidadeRepository.findAll());
+     public Page<UnidadeResponseDTO> findAll(Pageable pageable){
+         Page<Unidade> unidade = unidadeRepository.findAll(pageable);
+         return unidade.map(unidadeMapper::toDTO);
 
      }
 

@@ -8,6 +8,8 @@ import com.example.demo.infrastructure.exception.UsuarioNaoEncontrado;
 import com.example.demo.infrastructure.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -34,10 +36,10 @@ public class UsuarioService {
     }
 
 
-    public List<UsuarioResponseDTO> findAll() {
+    public Page<UsuarioResponseDTO> findAll(Pageable pageable) {
 
-        List<UsuarioResponseDTO> dto = usuarioMapper.toListDTO(usuarioRepository.findAll());
-        return dto;
+        Page<Usuario> usuario = usuarioRepository.findAll(pageable);
+        return usuario.map(usuarioMapper::toDTO);
 
     }
 

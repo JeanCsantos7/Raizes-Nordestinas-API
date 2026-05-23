@@ -8,6 +8,8 @@ import com.example.demo.application.service.ProdutoService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,9 +32,9 @@ public class ProdutoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ProdutoResponseDTO>> findAll(){
+    public ResponseEntity<Page<ProdutoResponseDTO>> findAll(Pageable pageable){
 
-        return ResponseEntity.ok(produtoService.findAll());
+        return ResponseEntity.ok(produtoService.findAll(pageable));
     }
 
 

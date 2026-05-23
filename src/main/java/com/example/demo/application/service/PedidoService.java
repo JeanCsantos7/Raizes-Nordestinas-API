@@ -12,6 +12,8 @@ import com.example.demo.domain.enums.StatusPedido;
 import com.example.demo.domain.model.*;
 import com.example.demo.infrastructure.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -97,10 +99,10 @@ public class PedidoService {
 
     }
 
-    public List<PedidoResponseDTO> findAll(){
+    public Page<PedidoResponseDTO> findAll(Pageable pageable){
 
-
-        return pedidoMapper.toListDTO(pedidoRepository.findAll());
+        Page<Pedido> pedido = pedidoRepository.findAll(pageable);
+       return pedido.map(pedidoMapper::toDTO);
     }
 
     public PedidoResponseDTO findById(Long id){
@@ -111,6 +113,8 @@ public class PedidoService {
 
 
     }
+
+
 
     public AtualizarStatusResponseDTO atualizarStatus(StatusPedido status, Long id){
         Pedido buscaProduto = pedidoRepository.findById(id).orElseThrow(() -> new RuntimeException("Pedido não localizado"));

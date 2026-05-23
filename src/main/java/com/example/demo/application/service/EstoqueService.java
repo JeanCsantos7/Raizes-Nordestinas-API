@@ -12,6 +12,8 @@ import com.example.demo.infrastructure.repository.EstoqueRepository;
 import com.example.demo.infrastructure.repository.ProdutoRepository;
 import com.example.demo.infrastructure.repository.UnidadeRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -42,8 +44,9 @@ public class EstoqueService {
 
    }
 
-   public List<EstoqueResponseDTO> findAll(){
-     return  estoqueMapper.listDTO(estoqueRepository.findAll());
+   public Page<EstoqueResponseDTO> findAll(Pageable pageable){
+     Page<Estoque> estoque = estoqueRepository.findAll(pageable);
+     return estoque.map(estoqueMapper::toDTO);
 
    }
 

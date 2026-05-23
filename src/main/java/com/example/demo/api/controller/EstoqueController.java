@@ -7,6 +7,8 @@ import com.example.demo.application.dto.response.EstoqueResponseDTO;
 import com.example.demo.application.service.EstoqueService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,9 +29,9 @@ public class EstoqueController {
     }
 
     @GetMapping
-    public ResponseEntity<List<EstoqueResponseDTO>> findAll(){
+    public ResponseEntity<Page<EstoqueResponseDTO>> findAll(Pageable pageable){
 
-        return ResponseEntity.ok(estoqueService.findAll());
+        return ResponseEntity.ok(estoqueService.findAll(pageable));
     }
 
     @PatchMapping("/adicionarQuantidade/{id}")

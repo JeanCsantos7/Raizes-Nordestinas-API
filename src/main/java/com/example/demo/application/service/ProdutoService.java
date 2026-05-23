@@ -5,10 +5,12 @@ import com.example.demo.application.dto.response.ProdutoResponseDTO;
 import com.example.demo.application.mapper.ProdutoMapper;
 import com.example.demo.application.projection.ProdutoProjection;
 import com.example.demo.domain.model.Produto;
-import com.example.demo.domain.model.Unidade;
+
 import com.example.demo.infrastructure.repository.ProdutoRepository;
-import com.example.demo.infrastructure.repository.UnidadeRepository;
+
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -34,11 +36,13 @@ public class ProdutoService {
 
     }
 
-    public List<ProdutoResponseDTO> findAll(){
+    public Page<ProdutoResponseDTO> findAll(Pageable pageable){
 
 
-       List<ProdutoResponseDTO>  dto = produtoMapper.listDTO(produtoRepository.findAll());
-       return dto;
+       Page<Produto> produtos = produtoRepository.findAll(pageable);
+       return produtos.map(produtoMapper::toDTO);
+
+
 
     }
 

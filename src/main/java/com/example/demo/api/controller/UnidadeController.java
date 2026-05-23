@@ -5,6 +5,8 @@ import com.example.demo.application.dto.response.UnidadeResponseDTO;
 import com.example.demo.application.service.UnidadeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,9 +28,9 @@ public class UnidadeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<UnidadeResponseDTO>> findAll() {
+    public ResponseEntity<Page<UnidadeResponseDTO>> findAll(Pageable pageable) {
 
-        return ResponseEntity.ok(unidadeService.findAll());
+        return ResponseEntity.ok(unidadeService.findAll(pageable));
     }
 
 
