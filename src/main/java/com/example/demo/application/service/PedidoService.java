@@ -8,6 +8,7 @@ import com.example.demo.application.dto.response.PedidoResponseDTO;
 import com.example.demo.application.dto.response.PromocaoResponseDTO;
 import com.example.demo.application.mapper.PedidoMapper;
 import com.example.demo.application.mapper.PromocaoMapper;
+import com.example.demo.domain.enums.CanalPedido;
 import com.example.demo.domain.enums.StatusPedido;
 import com.example.demo.domain.model.*;
 import com.example.demo.infrastructure.repository.*;
@@ -33,6 +34,7 @@ public class PedidoService {
     private final EstoqueRepository estoqueRepository;
     private final PedidoMapper pedidoMapper;
     private final PromocaoMapper promocaoMapper;
+    private final FidelidadeService fidelidadeService;
 
     public PedidoResponseDTO save(PedidoRequestDTO dados){
 
@@ -105,6 +107,11 @@ public class PedidoService {
        return pedido.map(pedidoMapper::toDTO);
     }
 
+    public List<PedidoResponseDTO> findByCanalPedido(CanalPedido canal){
+        List<Pedido> buscaPedido = pedidoRepository.findByCanalPedido(canal);
+        return pedidoMapper.toListDTO(buscaPedido);
+    }
+
     public PedidoResponseDTO findById(Long id){
 
         Pedido buscaProduto = pedidoRepository.findById(id).orElseThrow(() -> new RuntimeException("Produto não localizado"));
@@ -117,9 +124,19 @@ public class PedidoService {
 
 
     public AtualizarStatusResponseDTO atualizarStatus(StatusPedido status, Long id){
-        Pedido buscaProduto = pedidoRepository.findById(id).orElseThrow(() -> new RuntimeException("Pedido não localizado"));
-        buscaProduto.setStatus(status);
-        Pedido salvarAlteracao = pedidoRepository.save(buscaProduto);
+        Pedido buscaPedido = pedidoRepository.findById(id).orElseThrow(() -> new RuntimeException("Pedido não localizado"));
+        StatusPedido statusAnterior = buscaPedido.getStatus();
+
+
+        buscaPedido.setStatus(status);
+        if(status.equals(StatusPedido.CONCLUIDO ) && statusAnterior != StatusPedido.CONCLUIDO ){
+          fidelidadeService.gerarPontos(buscaPedido);
+        }
+
+        else{
+            throw new RuntimeException("Não foi possível gerar seus pontos, pedido já havia sido concluido anteriormente!");
+        }
+        Pedido salvarAlteracao = pedidoRepository.save(buscaPedido);
 
         return pedidoMapper.atualizarStt(salvarAlteracao);
 

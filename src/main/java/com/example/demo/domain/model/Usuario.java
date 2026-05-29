@@ -32,6 +32,8 @@ public class Usuario {
 
     private String email;
 
+    private Integer pontos = 0;
+
     @OneToMany(mappedBy = "clientes", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Pedido> clientes = new ArrayList<>();
 

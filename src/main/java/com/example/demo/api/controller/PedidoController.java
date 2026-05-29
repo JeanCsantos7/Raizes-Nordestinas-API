@@ -1,12 +1,11 @@
 package com.example.demo.api.controller;
 
 import com.example.demo.application.dto.request.PedidoRequestDTO;
-
 import com.example.demo.application.dto.response.PedidoResponseDTO;
-
 import com.example.demo.application.dto.response.PromocaoResponseDTO;
 import com.example.demo.application.service.PedidoService;
-import com.example.demo.domain.enums.StatusPedido;
+import com.example.demo.domain.enums.CanalPedido;
+
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +14,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
@@ -43,6 +44,11 @@ public class PedidoController {
         return ResponseEntity.ok(pedidoService.findById(id));
     }
 
+    @GetMapping("/canal")
+    public ResponseEntity<List<PedidoResponseDTO>> findByCanalPedido(@RequestParam CanalPedido canal){
+        return ResponseEntity.ok(pedidoService.findByCanalPedido(canal));
+    }
+
     @GetMapping("/aplicarPromocao/{id}")
     public ResponseEntity<PromocaoResponseDTO> aplicarPromocao(@PathVariable Long id){
 
@@ -51,8 +57,8 @@ public class PedidoController {
 
 
     @PatchMapping("/{id}")
-    public ResponseEntity<PedidoResponseDTO> atualizarStatus(@RequestBody @Valid StatusPedido statusPedido, @PathVariable Long id) {
-        pedidoService.atualizarStatus(statusPedido, id);
+    public ResponseEntity<PedidoResponseDTO> atualizarStatus(@RequestBody  PedidoRequestDTO dados, @PathVariable Long id) {
+        pedidoService.atualizarStatus(dados.status(), id);
         return  ResponseEntity.noContent().build();
     }
 
