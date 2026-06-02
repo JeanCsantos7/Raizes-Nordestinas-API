@@ -49,7 +49,7 @@ public class PedidoController {
         return ResponseEntity.ok(pedidoService.findByCanalPedido(canal));
     }
 
-    @GetMapping("/aplicarPromocao/{id}")
+    @PatchMapping("/aplicarPromocao/{id}")
     public ResponseEntity<PromocaoResponseDTO> aplicarPromocao(@PathVariable Long id){
 
         return ResponseEntity.ok(pedidoService.aplicarPromocao(id));

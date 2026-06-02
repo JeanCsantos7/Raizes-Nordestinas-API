@@ -18,7 +18,7 @@ public class JwtService {
                 .setSubject(email)
                 .setIssuedAt(new Date())
                 .claim("role", perfil)
-                .setExpiration(new Date(System.currentTimeMillis() + 1500000))
+                .setExpiration(new Date(System.currentTimeMillis() + 2100000))
                 .signWith(SignatureAlgorithm.HS256, SECRET)
                 .compact();
     }

@@ -20,7 +20,6 @@ public interface ItemPedidoMapper {
 
 
     ItemPedidoResponseDTO toDTO(ItemPedido entity);
-    List<ItemPedidoResponseDTO> toListDTO(List<ItemPedido> ListEntity);
     @BeanMapping(
             nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
     )

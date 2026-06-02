@@ -29,6 +29,9 @@ public class Pedido {
     @JoinColumn(name= "cliente_id")
     private Usuario clientes;
 
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Pagamento> pagamento =new ArrayList<>();
+
     @ManyToOne
     @JoinColumn(name = "unidade_id")
     private Unidade unidadePedido;
