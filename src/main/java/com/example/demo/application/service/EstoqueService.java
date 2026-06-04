@@ -8,6 +8,10 @@ import com.example.demo.application.mapper.EstoqueMapper;
 import com.example.demo.domain.model.Estoque;
 import com.example.demo.domain.model.Produto;
 import com.example.demo.domain.model.Unidade;
+import com.example.demo.infrastructure.exception.EstoqueEsgotado;
+import com.example.demo.infrastructure.exception.ProdutoNaoEncontrado;
+import com.example.demo.infrastructure.exception.QuantidadeSuperiorEstoque;
+import com.example.demo.infrastructure.exception.UnidadeNaoEncontrada;
 import com.example.demo.infrastructure.repository.EstoqueRepository;
 import com.example.demo.infrastructure.repository.ProdutoRepository;
 import com.example.demo.infrastructure.repository.UnidadeRepository;
@@ -30,13 +34,15 @@ public class EstoqueService {
 
    public EstoqueResponseDTO save(EstoqueRequestDTO dados){
 
-     Produto buscaProduto = produtoRepository.findById(dados.produtoId()).orElseThrow(() -> new RuntimeException("Não foi possível localizar o produto") );
-     Unidade buscaUnidade = unidadeRepository.findById(dados.unidadeId()).orElseThrow(() -> new RuntimeException("Não foi possível localizar a unidade") );
+     Produto buscaProduto = produtoRepository.findById(dados.produtoId()).orElseThrow(() -> new ProdutoNaoEncontrado("Não foi possível localizar o produto") );
+     Unidade buscaUnidade = unidadeRepository.findById(dados.unidadeId()).orElseThrow(() -> new UnidadeNaoEncontrada("Não foi possível localizar a unidade") );
      Estoque estoque = new Estoque();
 
      estoque.setProduto(buscaProduto);
      estoque.setUnidade(buscaUnidade);
      estoque.setQuantidade(dados.quantidade());
+
+
 
      Estoque salvarItem = estoqueRepository.save(estoque);
 
@@ -53,7 +59,7 @@ public class EstoqueService {
     public EstoqueResponseDTO adicionarQuantidade(Long id, AdicionarQuantidadeRequestDTO qtd ){
 
 
-      Estoque buscaEstoque = estoqueRepository.findById(id).orElseThrow(() -> new RuntimeException("Não foi possível localizar o produto em estoque"));
+      Estoque buscaEstoque = estoqueRepository.findById(id).orElseThrow(() -> new ProdutoNaoEncontrado("Não foi possível localizar o produto em estoque"));
 
       buscaEstoque.setQuantidade(buscaEstoque.getQuantidade() + qtd.quantidade());
        Estoque salvarItem = estoqueRepository.save(buscaEstoque);
@@ -66,15 +72,21 @@ public class EstoqueService {
 
     }
 
-        public EstoqueResponseDTO removerQuantidade(Long id, AdicionarQuantidadeRequestDTO qtd){
+        public EstoqueResponseDTO removerQuantidade(Long id, Integer qtd){
 
-      Estoque buscaEstoque = estoqueRepository.findById(id).orElseThrow(() -> new RuntimeException("Não foi possível localizar o produto em estoque"));
-
-      buscaEstoque.setQuantidade(buscaEstoque.getQuantidade() - qtd.quantidade());
-      Estoque salvarItem = estoqueRepository.save(buscaEstoque);
+      Estoque buscaEstoque = estoqueRepository.findById(id).orElseThrow(() -> new ProdutoNaoEncontrado("Não foi possível localizar o produto em estoque"));
 
 
-      return estoqueMapper.toDTO(salvarItem);
+          buscaEstoque.setQuantidade(buscaEstoque.getQuantidade() - qtd);
+
+          Estoque salvarItem = estoqueRepository.save(buscaEstoque);
+
+          return estoqueMapper.toDTO(salvarItem);
+
+
+
+
+
 
     }
 }

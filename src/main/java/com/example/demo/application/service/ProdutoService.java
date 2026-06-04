@@ -6,6 +6,7 @@ import com.example.demo.application.mapper.ProdutoMapper;
 import com.example.demo.application.projection.ProdutoProjection;
 import com.example.demo.domain.model.Produto;
 
+import com.example.demo.infrastructure.exception.ProdutoNaoEncontrado;
 import com.example.demo.infrastructure.repository.ProdutoRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -48,7 +49,7 @@ public class ProdutoService {
 
     public ProdutoResponseDTO findById(Long id){
 
-        Produto buscaProduto = produtoRepository.findById(id).orElseThrow(() -> new RuntimeException("Produto não localizado"));
+        Produto buscaProduto = produtoRepository.findById(id).orElseThrow(() -> new ProdutoNaoEncontrado("Produto não localizado"));
 
         return produtoMapper.toDTO(buscaProduto);
 
@@ -66,7 +67,7 @@ public class ProdutoService {
 
     public ProdutoResponseDTO update(ProdutoRequestDTO dados, Long id){
 
-        Produto buscaProduto = produtoRepository.findById(id).orElseThrow(() -> new RuntimeException("Produto não localizado"));
+        Produto buscaProduto = produtoRepository.findById(id).orElseThrow(() -> new ProdutoNaoEncontrado("Produto não localizado"));
       produtoMapper.update(dados, buscaProduto);
       Produto produtoSalvo = produtoRepository.save(buscaProduto);
 
@@ -80,7 +81,7 @@ public class ProdutoService {
 
     public ProdutoResponseDTO alterarPreco(Long id, BigDecimal preco) {
 
-        Produto buscaProduto = produtoRepository.findById(id).orElseThrow(() -> new RuntimeException("Produto não localizado"));
+        Produto buscaProduto = produtoRepository.findById(id).orElseThrow(() -> new ProdutoNaoEncontrado("Produto não localizado"));
         buscaProduto.setPreco(preco);
         Produto produtoSalvo = produtoRepository.save(buscaProduto);
 

@@ -11,6 +11,7 @@ import com.example.demo.application.mapper.PromocaoMapper;
 import com.example.demo.domain.enums.CanalPedido;
 import com.example.demo.domain.enums.StatusPedido;
 import com.example.demo.domain.model.*;
+import com.example.demo.infrastructure.exception.*;
 import com.example.demo.infrastructure.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -35,11 +36,12 @@ public class PedidoService {
     private final PedidoMapper pedidoMapper;
     private final PromocaoMapper promocaoMapper;
     private final FidelidadeService fidelidadeService;
+    private final EstoqueService estoqueService;
 
     public PedidoResponseDTO save(PedidoRequestDTO dados){
 
-        Usuario buscaCliente = usuarioRepository.findById(dados.clienteID()).orElseThrow(() -> new RuntimeException("Usuario não encontrado!"));
-        Unidade buscaUnidade = unidadeRepository.findById(dados.unidadeID()).orElseThrow(() -> new RuntimeException("Unidade não encontrada!"));
+        Usuario buscaCliente = usuarioRepository.findById(dados.clienteID()).orElseThrow(() -> new UsuarioNaoEncontrado("Usuario não encontrado!"));
+        Unidade buscaUnidade = unidadeRepository.findById(dados.unidadeID()).orElseThrow(() -> new UnidadeNaoEncontrada("Unidade não encontrada!"));
         Pedido pedido = new Pedido();
         pedido.setClientes(buscaCliente);
         pedido.setUnidadePedido(buscaUnidade);
@@ -53,7 +55,7 @@ public class PedidoService {
 
 
         for(ItemPedidoRequestDTO itemDTO : dados.itens()){
-            Produto produto = produtoRepository.findById(itemDTO.produtoID()).orElseThrow(() -> new RuntimeException("Não foi possível localizar o produto!"));
+            Produto produto = produtoRepository.findById(itemDTO.produtoID()).orElseThrow(() -> new ProdutoNaoEncontrado("Não foi possível localizar o produto!"));
             ItemPedido novoItem = new ItemPedido();
             novoItem.setPedido(pedido);
             novoItem.setProduto(produto);
@@ -66,7 +68,23 @@ public class PedidoService {
 
             Estoque produtoEstoque = estoqueRepository.findByProdutoId(itemDTO.produtoID());
 
-           produtoEstoque.setQuantidade(produtoEstoque.getQuantidade() - itemDTO.quantidade());
+            if(itemDTO.quantidade() <= produtoEstoque.getQuantidade()){
+
+                estoqueService.removerQuantidade(itemDTO.produtoID(), itemDTO.quantidade());
+            }
+
+            else if(produtoEstoque.getQuantidade() == 0){
+
+                throw new EstoqueEsgotado("Produto em falta no estoque!");
+            }
+
+            else{
+                throw new QuantidadeSuperiorEstoque("Quantidade informada é maior do que temos em estoque");
+
+            }
+
+
+
 
             estoqueRepository.save(produtoEstoque);
 
@@ -82,6 +100,7 @@ public class PedidoService {
 
 
         }
+
 
 
 
@@ -114,9 +133,9 @@ public class PedidoService {
 
     public PedidoResponseDTO findById(Long id){
 
-        Pedido buscaProduto = pedidoRepository.findById(id).orElseThrow(() -> new RuntimeException("Produto não localizado"));
+        Pedido buscaPedido = pedidoRepository.findById(id).orElseThrow(() -> new PedidoNaoEncontrado("Produto não localizado"));
 
-        return pedidoMapper.toDTO(buscaProduto);
+        return pedidoMapper.toDTO(buscaPedido);
 
 
     }
@@ -124,7 +143,7 @@ public class PedidoService {
 
 
     public AtualizarStatusResponseDTO atualizarStatus(StatusPedido status, Long id){
-        Pedido buscaPedido = pedidoRepository.findById(id).orElseThrow(() -> new RuntimeException("Pedido não localizado"));
+        Pedido buscaPedido = pedidoRepository.findById(id).orElseThrow(() -> new PedidoNaoEncontrado("Pedido não localizado"));
         StatusPedido statusAnterior = buscaPedido.getStatus();
 
 
@@ -134,7 +153,7 @@ public class PedidoService {
         }
 
         else{
-            throw new RuntimeException("Não foi possível gerar seus pontos, pedido já havia sido concluido anteriormente!");
+            throw new ErroResgatePontos("Não foi possível gerar seus pontos, pedido já havia sido concluido anteriormente!");
         }
         Pedido salvarAlteracao = pedidoRepository.save(buscaPedido);
 
@@ -145,23 +164,24 @@ public class PedidoService {
 
     public PromocaoResponseDTO aplicarPromocao(Long pedidoId){
 
-        Pedido buscaProduto = pedidoRepository.findById(pedidoId).orElseThrow(() -> new RuntimeException("Pedido não localizado"));
+        Pedido buscaPedido = pedidoRepository.findById(pedidoId).orElseThrow(() -> new PedidoNaoEncontrado("Pedido não localizado"));
         BigDecimal valorPromocao = new BigDecimal("150.0");
 
-        BigDecimal desconto = buscaProduto.getTotal().multiply(BigDecimal.valueOf(6)).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+        BigDecimal desconto = buscaPedido.getTotal().multiply(BigDecimal.valueOf(6)).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
 
 
-        if(buscaProduto.getTotal().compareTo(valorPromocao) >= 0){
-         buscaProduto.setTotal(buscaProduto.getTotal().subtract(desconto));
-         buscaProduto.setStatusPromocao("Promoção Aplicada");
+        if(buscaPedido.getTotal().compareTo(valorPromocao) >= 0){
+            buscaPedido.setTotal(buscaPedido.getTotal().subtract(desconto));
+            buscaPedido.setStatusPromocao("Promoção Aplicada");
         }
 
         else{
 
-            buscaProduto.setStatusPromocao("Seu pedido não atingiu o valor mínimo para o desconto!");
+            buscaPedido.setStatusPromocao("Seu pedido não atingiu o valor mínimo para o desconto!");
+
         }
 
-        Pedido salvarPedido = pedidoRepository.save(buscaProduto);
+        Pedido salvarPedido = pedidoRepository.save(buscaPedido);
 
         return promocaoMapper.promocao(salvarPedido);
 

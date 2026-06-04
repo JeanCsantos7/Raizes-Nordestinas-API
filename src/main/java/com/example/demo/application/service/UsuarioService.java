@@ -4,6 +4,7 @@ import com.example.demo.application.dto.request.UsuarioRequestDTO;
 import com.example.demo.application.dto.response.UsuarioResponseDTO;
 import com.example.demo.application.mapper.UsuarioMapper;
 import com.example.demo.domain.model.Usuario;
+import com.example.demo.infrastructure.exception.EmailExistente;
 import com.example.demo.infrastructure.exception.UsuarioNaoEncontrado;
 import com.example.demo.infrastructure.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,9 +31,29 @@ public class UsuarioService {
         Usuario toEntity = usuarioMapper.toEntity(dados);
         String senhaHash = passwordEncoder.encode(dados.senha());
         toEntity.setSenhaHash(senhaHash);
+        EmailExistente(dados.email());
         Usuario usuarioSalvo = usuarioRepository.save(toEntity);
         return usuarioMapper.toDTO(usuarioSalvo);
 
+    }
+
+    public void EmailExistente(String email){
+
+        try{
+
+            Boolean existente = verificarEmailExistente(email);
+            if(existente){
+                throw new EmailExistente("Email já cadastrado! ");
+
+
+            }
+        }
+
+        catch (EmailExistente ex){
+
+            throw new EmailExistente("Email já cadastrado! " + ex.getCause());
+
+        }
     }
 
 
@@ -69,10 +90,14 @@ public class UsuarioService {
 
     }
 
+    public Boolean verificarEmailExistente(String email){
+        return usuarioRepository.existsByEmail(email);
+    }
+
 
 
     public UsuarioResponseDTO update(Long id, UsuarioRequestDTO dto){
-        Usuario buscaUsuario = usuarioRepository.findById(id).orElseThrow(() -> new RuntimeException("Usuário não encontrado, verifique os dados informados!"));
+        Usuario buscaUsuario = usuarioRepository.findById(id).orElseThrow(() -> new UsuarioNaoEncontrado("Usuário não encontrado, verifique os dados informados!"));
         usuarioMapper.update(dto, buscaUsuario);
         String senhaAlterada = passwordEncoder.encode(dto.senha());
         buscaUsuario.setSenhaHash(senhaAlterada);
@@ -81,8 +106,6 @@ public class UsuarioService {
 
     }
 
-    public void delete(Long id){
-        usuarioRepository.deleteById(id);
-    }
+
 
 }

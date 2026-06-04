@@ -32,6 +32,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
             if (header != null && header.startsWith("Bearer ")) {
 
+
                 String token = header.substring(7);
 
                 String email = jwtService.validarToken(token);
@@ -47,22 +48,26 @@ public class JwtFilter extends OncePerRequestFilter {
                 SecurityContextHolder
                         .getContext()
                         .setAuthentication(auth);
-            }
+            }}
 
-            filterChain.doFilter(request, response);
+                catch (Exception ex) {
 
-        } catch (Exception ex) {
 
-            ex.printStackTrace();
 
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json");
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.setContentType("application/json");
 
-            response.getWriter().write("""
+                    response.getWriter().write("""
         {
           "status": 401,
           "message": "Token inválido ou expirado"
         }
         """);
+
+                    return;
+                }
+
+            filterChain.doFilter(request, response);
+
         }
-    }}
+    }

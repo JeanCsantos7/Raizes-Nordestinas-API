@@ -40,9 +40,5 @@ public class EstoqueController {
         return ResponseEntity.ok(estoqueService.adicionarQuantidade(id, qtd));
     }
 
-    @PatchMapping("/removerQuantidade/{id}")
-    public ResponseEntity<EstoqueResponseDTO> removerQuantidade(@PathVariable Long id, @RequestBody AdicionarQuantidadeRequestDTO qtd){
 
-        return ResponseEntity.ok(estoqueService.removerQuantidade(id, qtd));
-    }
 }

@@ -8,6 +8,10 @@ import com.example.demo.domain.enums.StatusPagamento;
 import com.example.demo.domain.enums.StatusPedido;
 import com.example.demo.domain.model.Pagamento;
 import com.example.demo.domain.model.Pedido;
+import com.example.demo.infrastructure.exception.ErroEstorno;
+import com.example.demo.infrastructure.exception.PagamentoNaoEncontrado;
+import com.example.demo.infrastructure.exception.PagamentoRecusado;
+import com.example.demo.infrastructure.exception.PedidoNaoEncontrado;
 import com.example.demo.infrastructure.repository.PagamentoRepository;
 import com.example.demo.infrastructure.repository.PedidoRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +36,7 @@ public class PagamentoService {
     }
 
     public PagamentoResponseDTO processarPagamento(PagamentoRequestDTO dto){
-        Pedido pedido = pedidoRepository.findById(dto.pedidoID()).orElseThrow(() -> new RuntimeException("Pedido não localizado"));
+        Pedido pedido = pedidoRepository.findById(dto.pedidoID()).orElseThrow(() -> new PedidoNaoEncontrado("Pedido não localizado"));
         Pagamento pagamento = new Pagamento();
         pagamento.setDataPagamento(LocalDateTime.now());
         pagamento.setPedido(pedido);
@@ -55,6 +59,7 @@ public class PagamentoService {
             pagamento.setStatus(StatusPagamento.NEGADO);
             pedido.setStatus(StatusPedido.PAGAMENTO_NEGADO);
             pagamento.setPayload("Pagamento negado!!");
+            throw new PagamentoRecusado("O pagamento foi recusado, verifique as informações de pagamento!!");
 
 
         }
@@ -67,13 +72,13 @@ public class PagamentoService {
     }
 
     public EstornoResponseDTO estornar(Long id){
-        Pagamento pagamento = pagamentoRepository.findById(id).orElseThrow(() -> new RuntimeException("Não foi possível localizar o registro de pagamento"));
+        Pagamento pagamento = pagamentoRepository.findById(id).orElseThrow(() -> new PagamentoNaoEncontrado("Não foi possível localizar o registro de pagamento"));
 
 
 
 
             Pedido pedido = pagamento.getPedido();
-            if(pedido.getStatus().equals(StatusPedido.CONCLUIDO)){
+            if(pagamento.getStatus().equals(StatusPagamento.APROVADO)){
                 pagamento.setStatus(StatusPagamento.PENDENTE);
 
                 pedido.setStatus(StatusPedido.CANCELADO);
@@ -87,7 +92,9 @@ public class PagamentoService {
 
 
         else{
-            throw new RuntimeException("Só é possível estornar pedidos concluidos!");
+
+
+          throw new ErroEstorno("Só é possível estornar pedidos que já foram pagos!");
         }
 
 

@@ -49,11 +49,7 @@ public class UsuarioController {
     return ResponseEntity.ok(usuarioService.update(id, dto));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable  Long id){
-        usuarioService.delete(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-    }
+
 
 
 

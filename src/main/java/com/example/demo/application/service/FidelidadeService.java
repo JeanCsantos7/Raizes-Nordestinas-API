@@ -5,6 +5,8 @@ import com.example.demo.application.dto.response.FidelidadeResponseDTO;
 import com.example.demo.application.mapper.UsuarioMapper;
 import com.example.demo.domain.model.Pedido;
 import com.example.demo.domain.model.Usuario;
+import com.example.demo.infrastructure.exception.ErroResgatePontos;
+import com.example.demo.infrastructure.exception.UsuarioNaoEncontrado;
 import com.example.demo.infrastructure.repository.UsuarioRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -41,16 +43,16 @@ public class FidelidadeService {
 
 
     public FidelidadeResponseDTO consultarPontos(Long id){
-       Usuario buscaUsuario = usuarioRepository.findById(id).orElseThrow(() -> new RuntimeException("Não foi possível localizar o usuário"));
+       Usuario buscaUsuario = usuarioRepository.findById(id).orElseThrow(() -> new UsuarioNaoEncontrado("Não foi possível localizar o usuário"));
        return usuarioMapper.fidelidadeDTO(buscaUsuario);
 
     }
 
 
     public  FidelidadeResponseDTO resgatarPontos(Long id,  ResgatarPontosRequestDTO dto){
-        Usuario buscaUsuario = usuarioRepository.findById(id).orElseThrow(() -> new RuntimeException("Não foi possível localizar o usuário"));
+        Usuario buscaUsuario = usuarioRepository.findById(id).orElseThrow(() -> new UsuarioNaoEncontrado("Não foi possível localizar o usuário"));
         if (dto.pontos() > buscaUsuario.getPontos()){
-            throw new RuntimeException("o valor deve ser menor ou igual a: " + buscaUsuario.getPontos());
+            throw new ErroResgatePontos("o valor deve ser menor ou igual a: " + buscaUsuario.getPontos());
         }
 
 
