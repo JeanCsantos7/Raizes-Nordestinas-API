@@ -49,7 +49,7 @@ public class ProdutoService {
 
     public ProdutoResponseDTO findById(Long id){
 
-        Produto buscaProduto = produtoRepository.findById(id).orElseThrow(() -> new ProdutoNaoEncontrado("Produto não localizado"));
+        Produto buscaProduto = produtoRepository.findById(id).orElseThrow(() -> new ProdutoNaoEncontrado("Produto não encontrado"));
 
         return produtoMapper.toDTO(buscaProduto);
 
@@ -67,7 +67,7 @@ public class ProdutoService {
 
     public ProdutoResponseDTO update(ProdutoRequestDTO dados, Long id){
 
-        Produto buscaProduto = produtoRepository.findById(id).orElseThrow(() -> new ProdutoNaoEncontrado("Produto não localizado"));
+        Produto buscaProduto = produtoRepository.findById(id).orElseThrow(() -> new ProdutoNaoEncontrado("Produto não encontrado"));
       produtoMapper.update(dados, buscaProduto);
       Produto produtoSalvo = produtoRepository.save(buscaProduto);
 
@@ -77,11 +77,13 @@ public class ProdutoService {
 
     public void delete(Long id){
         produtoRepository.deleteById(id);
+
+
     }
 
     public ProdutoResponseDTO alterarPreco(Long id, BigDecimal preco) {
 
-        Produto buscaProduto = produtoRepository.findById(id).orElseThrow(() -> new ProdutoNaoEncontrado("Produto não localizado"));
+        Produto buscaProduto = produtoRepository.findById(id).orElseThrow(() -> new ProdutoNaoEncontrado("Produto não encontrado"));
         buscaProduto.setPreco(preco);
         Produto produtoSalvo = produtoRepository.save(buscaProduto);
 

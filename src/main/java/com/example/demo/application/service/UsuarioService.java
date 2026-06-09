@@ -3,6 +3,7 @@ package com.example.demo.application.service;
 import com.example.demo.application.dto.request.UsuarioRequestDTO;
 import com.example.demo.application.dto.response.UsuarioResponseDTO;
 import com.example.demo.application.mapper.UsuarioMapper;
+import com.example.demo.domain.enums.PerfilUsuario;
 import com.example.demo.domain.model.Usuario;
 import com.example.demo.infrastructure.exception.EmailExistente;
 import com.example.demo.infrastructure.exception.UsuarioNaoEncontrado;
@@ -32,6 +33,7 @@ public class UsuarioService {
         String senhaHash = passwordEncoder.encode(dados.senha());
         toEntity.setSenhaHash(senhaHash);
         EmailExistente(dados.email());
+        toEntity.setPerfil(PerfilUsuario.CLIENTE);
         Usuario usuarioSalvo = usuarioRepository.save(toEntity);
         return usuarioMapper.toDTO(usuarioSalvo);
 
@@ -51,7 +53,7 @@ public class UsuarioService {
 
         catch (EmailExistente ex){
 
-            throw new EmailExistente("Email já cadastrado! " + ex.getCause());
+            throw new EmailExistente("Email já cadastrado!" );
 
         }
     }
@@ -99,10 +101,13 @@ public class UsuarioService {
     public UsuarioResponseDTO update(Long id, UsuarioRequestDTO dto){
         Usuario buscaUsuario = usuarioRepository.findById(id).orElseThrow(() -> new UsuarioNaoEncontrado("Usuário não encontrado, verifique os dados informados!"));
         usuarioMapper.update(dto, buscaUsuario);
-        String senhaAlterada = passwordEncoder.encode(dto.senha());
-        buscaUsuario.setSenhaHash(senhaAlterada);
         Usuario usuarioSalvo = usuarioRepository.save(buscaUsuario);
         return usuarioMapper.toDTO(usuarioSalvo);
+
+    }
+
+    public void delete(Long id){
+        usuarioRepository.deleteById(id);
 
     }
 

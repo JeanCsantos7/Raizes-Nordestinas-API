@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 public class RestExceptionHandler {
 
     @ExceptionHandler(UsuarioNaoEncontrado.class)
-    public ResponseEntity<NaoEncontradoDTO> usuarioNaoEncontrado(UsuarioNaoEncontrado ex){
+    public ResponseEntity<NaoEncontradoDTO> usuarioNaoEncontradoException(UsuarioNaoEncontrado ex){
 
         NaoEncontradoDTO erro = new NaoEncontradoDTO(
                 ex.getMessage(),
@@ -21,6 +21,17 @@ public class RestExceptionHandler {
         );
 
         return ResponseEntity.status(404).body(erro);
+    }
+
+    public ResponseEntity<UsuarioNaoCadastradoDTO> usuarioNaoCadastradoException(UsuarioNaoCadastrado ex){
+
+        UsuarioNaoCadastradoDTO erro = new UsuarioNaoCadastradoDTO(
+                ex.getMessage(),
+                401,
+                LocalDateTime.now()
+        );
+
+        return ResponseEntity.status(401).body(erro);
     }
 
     @ExceptionHandler(PedidoNaoEncontrado.class)
@@ -82,11 +93,11 @@ public class RestExceptionHandler {
     public ResponseEntity<PagamentoRecusadoDTO> PagamentoRecusadoException(PagamentoRecusado ex){
         PagamentoRecusadoDTO erro = new PagamentoRecusadoDTO(
                 ex.getMessage(),
-                403,
+                409,
                 LocalDateTime.now()
         );
 
-        return ResponseEntity.status(403).body(erro);
+        return ResponseEntity.status(409).body(erro);
     }
 
     @ExceptionHandler(ErroEstorno.class)
@@ -126,11 +137,11 @@ public class RestExceptionHandler {
     public ResponseEntity<QuantidadeSuperiorEstoqueDTO> QuantidadeSuperiorEstoqueException(QuantidadeSuperiorEstoque ex){
         QuantidadeSuperiorEstoqueDTO erro = new QuantidadeSuperiorEstoqueDTO(
                 ex.getMessage(),
-                400,
+                409,
                 LocalDateTime.now()
         );
 
-        return ResponseEntity.status(400).body(erro);
+        return ResponseEntity.status(409).body(erro);
     }
 
     @ExceptionHandler(EmailExistente.class)

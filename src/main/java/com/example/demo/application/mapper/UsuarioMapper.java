@@ -7,10 +7,8 @@ import com.example.demo.application.dto.response.FidelidadeResponseDTO;
 import com.example.demo.application.dto.response.UsuarioResponseDTO;
 import com.example.demo.domain.model.Usuario;
 import java.util.List;
-import org.mapstruct.BeanMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+
+import org.mapstruct.*;
 
 
 @Mapper(componentModel = "spring")
@@ -18,6 +16,7 @@ public interface UsuarioMapper {
 
     Usuario toEntity(UsuarioRequestDTO dto);
     UsuarioResponseDTO toDTO(Usuario entity);
+    @Mapping(source = "pontos", target = "pontosRestantes")
     FidelidadeResponseDTO fidelidadeDTO(Usuario entity);
     List<UsuarioResponseDTO> toListDTO(List<Usuario> listEntity);
     @BeanMapping(

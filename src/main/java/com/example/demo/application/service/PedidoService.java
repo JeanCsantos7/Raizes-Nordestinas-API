@@ -70,7 +70,7 @@ public class PedidoService {
 
             if(itemDTO.quantidade() <= produtoEstoque.getQuantidade()){
 
-                estoqueService.removerQuantidade(itemDTO.produtoID(), itemDTO.quantidade());
+                estoqueService.removerQuantidade(produtoEstoque.getId(), itemDTO.quantidade());
             }
 
             else if(produtoEstoque.getQuantidade() == 0){
@@ -165,12 +165,13 @@ public class PedidoService {
     public PromocaoResponseDTO aplicarPromocao(Long pedidoId){
 
         Pedido buscaPedido = pedidoRepository.findById(pedidoId).orElseThrow(() -> new PedidoNaoEncontrado("Pedido não localizado"));
+        StatusPedido statusAnterior = buscaPedido.getStatus();
         BigDecimal valorPromocao = new BigDecimal("150.0");
 
         BigDecimal desconto = buscaPedido.getTotal().multiply(BigDecimal.valueOf(6)).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
 
 
-        if(buscaPedido.getTotal().compareTo(valorPromocao) >= 0){
+        if(buscaPedido.getTotal().compareTo(valorPromocao) >= 0 ){
             buscaPedido.setTotal(buscaPedido.getTotal().subtract(desconto));
             buscaPedido.setStatusPromocao("Promoção Aplicada");
         }
@@ -178,6 +179,7 @@ public class PedidoService {
         else{
 
             buscaPedido.setStatusPromocao("Seu pedido não atingiu o valor mínimo para o desconto!");
+            throw new ErroResgatePontos("Não foi possível gerar seus pontos, pedido já havia sido concluido anteriormente!");
 
         }
 

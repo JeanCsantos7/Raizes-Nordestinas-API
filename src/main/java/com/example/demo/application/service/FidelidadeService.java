@@ -58,6 +58,8 @@ public class FidelidadeService {
 
         buscaUsuario.setPontos(buscaUsuario.getPontos() - dto.pontos());
 
+
+
         Usuario salvar = usuarioRepository.save(buscaUsuario);
 
         return usuarioMapper.fidelidadeDTO(salvar);

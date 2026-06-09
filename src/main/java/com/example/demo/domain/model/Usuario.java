@@ -41,7 +41,7 @@ public class Usuario {
     private String senhaHash;
 
     @Enumerated(EnumType.STRING)
-    private PerfilUsuario perfil;
+    private PerfilUsuario perfil = PerfilUsuario.CLIENTE;
 
 
 

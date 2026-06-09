@@ -1,5 +1,7 @@
 package com.example.demo.application.dto.response;
 
+
+import com.example.demo.domain.enums.PerfilUsuario;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,11 +11,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class FidelidadeResponseDTO {
+public class LoginResponseDTO {
 
-    private String nome;
-    private String mensagem = "Pontos resgatados com sucesso! ";
-    private Integer pontosRestantes;
-
-
+    private String email;
+    private String senha;
 }
